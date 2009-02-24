@@ -1,0 +1,4 @@
+name = Perfil
+description = A module that allow users to publish their public key (GPG) and much more.
+core = 6.x
+package = User management

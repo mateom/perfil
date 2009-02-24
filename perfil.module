@@ -1,0 +1,54 @@
+<?php
+/*
+    perfil it's a Drupal module to allow the creation of rich profiles
+
+    Copyright (C) 2009 Mateo Matachana López
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>
+*/
+
+function perfil_user($op, &$edit, &$account, $category = NULL) {
+  switch ($op) {
+    case 'update':
+       $filename = "sites/default/files/pk/".$account->name.".asc";
+       file_put_contents( $filename, @$edit['public_key']);
+       break;
+
+    case 'form':
+       $form['public_key'] = array(
+          '#type'     => 'textarea',
+          '#title'    => t('Paste here your Public Key.'),
+          '#default_value' => @$edit['public_key'],
+          '#description' => t('This creates a link on your profile wich allow other users to download your public key'),
+          '#required' => FALSE,
+       );
+       return $form;
+       break;
+
+    case 'view':
+       $pk_file = "sites/default/files/pk/".$account->name.".asc";
+       $pk_link = base_path().$pk_file;
+
+       if(file_exists($pk_file))
+       {
+	 $account->content['summary']['pk_link'] = array(
+		 '#type'  => 'user_profile_item',
+		 '#title' => t('Public key'),
+		 '#value' => l($account->name.' public key',$pk_link,array('external' => TRUE)),
+	    );
+      }
+      break;
+  }
+}
+?>
